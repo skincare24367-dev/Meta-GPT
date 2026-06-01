@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  metagpt:
+    build: .
+    container_name: metagpt-app
+    volumes:
+      - ./workspace:/app/workspace
+      - ./config:/root/.metagpt
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY}
+    ports:
+      - "7860:7860"
+    networks:
+      - metagpt-network
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: metagpt-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - metagpt-network
+    restart: unless-stopped
+
+volumes:
+  redis-data:
+
+networks:
+  metagpt-network:
+    driver: bridge
